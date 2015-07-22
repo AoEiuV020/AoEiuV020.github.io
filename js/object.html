@@ -1,0 +1,32 @@
+<!--***************************************************
+	^> File Name: object.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/22 - 19:16:59
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>object.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<script>
+me={age:20,name:"AoEiuV"};
+document.write(""+me.age+":"+me.name+"<br/>");
+me=new Object();
+me.age=19;
+me.name="aoeiuv".toUpperCase();
+document.write(""+me.age+":"+me.name+"<br/>");
+function person(age,name)
+{
+	this.age=age;
+	this.name=name;
+}
+me=new person(18,"aoeiuv");
+document.write(""+me.age+":"+me.name+"<br/>");
+		</script>
+		</p>
+	</body>
+</html>

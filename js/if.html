@@ -1,0 +1,32 @@
+<!--***************************************************
+	^> File Name: if.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/22 - 18:38:56
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>if.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<button id='button' onclick="fun()">on</button>
+		</p>
+		<script>
+function fun()
+{
+	ele=document.getElementById("button");
+	if(ele.innerHTML=="on")
+	{
+		ele.innerHTML="off";
+	}
+	else
+	{
+		ele.innerHTML="on";
+	}
+}
+		</script>
+	</body>
+</html>
