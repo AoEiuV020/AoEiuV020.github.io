@@ -1,0 +1,32 @@
+<!--***************************************************
+	^> File Name: timeout.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/23 - 01:12:20
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>timeout.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<span id="span"></span>
+		<script>
+setTimeout('window.location.reload()',10000);
+span=document.getElementById("span");
+var pro=0;
+var t;
+function progress()
+{
+	span.innerHTML=String(pro)+"%";
+	pro=pro+1;
+	t=setTimeout('progress();',100);
+}
+setTimeout('progress();',100);
+		</script>
+		<button onclick='clearTimeout(t);'>Stop</button>
+		</p>
+	</body>
+</html>

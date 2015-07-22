@@ -1,0 +1,57 @@
+<!--***************************************************
+	^> File Name: typeconversion.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/22 - 20:41:37
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>typeconversion.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<script>
+document.write(""+10+"<br/>");
+document.write(""+true+"<br/>");
+document.write(""+(20).toString()+"<br/>");
+document.write(""+false.toString()+"<br/>");
+document.write(""+Date().toString()+"<br/>");
+document.write(""+[1,2,3].toString()+"<br/>");
+document.write(""+{age:20}.toString()+"<br/>");
+document.write(""+{age:20,toString:function (){return this.age.toString();}}.toString()+"<br/>");
+document.write(""+(30).toExponential()+"<br/>");
+document.write(""+(12.50000).toFixed(0)+"<br/>");
+document.write(""+(12.34999).toFixed(1)+"<br/>");
+document.write(""+(12.35000).toFixed(1)+"<br/>");
+document.write(""+(12.35001).toFixed(1)+"<br/>");
+document.write(""+(12.56789).toPrecision(5)+"<br/>");
+document.write(""+typeof (40).valueOf()+"<br/>");
+document.write(""+typeof (50).toString()+"<br/>");
+document.write("<br/>");
+var x="2";
+var y=x;
+y=y+y;
+document.write(""+y+"<br/>");
+x="3";
+y=+x;
+y=y+y;
+document.write(""+y+"<br/>");
+x="4";
+y=Number(x);
+y=y+y;
+document.write(""+y+"<br/>");
+x=true;
+y=5+x;
+document.write(""+y+"<br/>");
+x="AoEiuV";
+y=+x;
+document.write(""+typeof y);
+document.write(""+y+"<br/>");
+document.write(""+(y.toString()=="NaN")+"<br/>");
+document.write(""+(y==Number("NaN"))+"<br/>");
+		</script>
+		</p>
+	</body>
+</html>
