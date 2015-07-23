@@ -1,0 +1,37 @@
+<!--***************************************************
+	^> File Name: url.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/23 - 18:34:29
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>url.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		String<br/>
+		<input type="text" name="string" style="width:80%;" /><br/>
+		Url<br/>
+		<input type="text" name="url" style="width:80%;" /><br/>
+		<button onclick="tourl()">String to Url</button><br/>
+		<button onclick="tostring()">Url to String</button><br/>
+		</p>
+	<script>
+string=document.getElementsByName("string")[0];
+url=document.getElementsByName("url")[0];
+url.value="http://tieba.baidu.com/f?kw=%E5%95%8Ao%E9%A2%9Diu%E9%B1%BC";
+string.value=decodeURI(url.value);
+function tourl()
+{
+	url.value=encodeURI(string.value);
+}
+function tostring()
+{
+	string.value=decodeURI(url.value);
+}
+	</script>
+	</body>
+</html>

@@ -1,0 +1,61 @@
+<!--***************************************************
+	^> File Name: regex.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/23 - 16:32:17
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>regex.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<script>
+setTimeout('window.location.reload();',2000);
+var string="?user=AoEiuV020&password=aoeiuv";
+////////////0123456789012345678901234567890
+var	     s="I am AoEiuV,I am AoEiuV020,my password is aoeiuv"
+var reg=/[rd]=/
+document.write(string+"<br/>");
+document.write(s+"<br/>");
+document.write(""+string.search("user")+"<br/>");
+document.write(""+string.search(reg)+"<br/>");
+reg=/o.*=/
+document.write(""+string.search(reg)+"<br/>");
+reg=/e.{1,5}v/
+document.write(""+string.search(reg)+"<br/>");
+reg=/e.{1,5}v/i
+document.write(""+string.search(reg)+"<br/>");
+document.write("<br/>");
+document.write(""+s.replace("AoEiuV","AOEIUV")+"<br/>");
+document.write(s+"<br/>");
+document.write(""+s.replace(/AoEiuV/g,"AOEIUV")+"<br/>");
+document.write(""+s.replace(/AoEiuV/gi,"AOEIUV")+"<br/>");
+document.write("<br/>");
+
+document.write(""+/AOe/.test(s)+"<br/>");
+document.write(""+/AOe/i.test(s)+"<br/>");
+document.write("<br/>");
+
+document.write(""+/.o.iu./.exec(s)+"<br/>");
+document.write(""+/(am|is) aoeiuv/.exec(s)+"<br/>");
+document.write(""+s.match(/(am|is) AoEiuV/)+"<br/>");
+document.write(string.split("=")+"<br/>");
+document.write("<br/>");
+
+var argv=string.split(/[?=&]/);
+var users=["AoEiuV020","root"];
+var passwords=["aoeiuv","uroot"];
+document.write(""+argv+"<br/>");
+user=argv[argv.indexOf("user")+1];
+password=argv[argv.indexOf("password")+1];
+document.write(user+":"+password+"<br/>");
+var flag=(password==passwords[users.indexOf(user)]);
+document.write(""+flag+"<br/>");
+document.write("log in OK,"+"<br/>");
+		</script>
+		</p>
+	</body>
+</html>

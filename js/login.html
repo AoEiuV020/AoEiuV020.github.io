@@ -1,0 +1,35 @@
+<!--***************************************************
+	^> File Name: login.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/23 - 03:26:08
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>login.html</title>
+	<script>
+function validate()
+{
+	var user=document.getElementsByTagName("form")[0].user.value;
+	var pass=document.getElementsByTagName("form")[0].password.value;
+	var s=(user.length==0?"user ":"");
+	s=s+(pass.length==0?"password ":"");
+	if(s.length!=0)
+	{
+	alert(s+"can not be empty...");
+	}
+	return s.length==0;
+}
+	</script>
+</head>
+<html>
+	<body>
+		<p>
+		<form action="loginpage.html" target="_blank" onsubmit="return validate()">
+			<input type="text" name="user"/><br/>
+			<input type="password" name="password"/><br/>
+			<input type="submit" value="Submit"/><br/>
+		</p>
+	</body>
+</html>

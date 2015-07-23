@@ -1,0 +1,39 @@
+<!--***************************************************
+	^> File Name: loginpage.html
+	^> Author: AoEiuV020
+	^> Mail: 490674483@qq.com
+	^> Created Time: 2015/07/23 - 18:00:25
+***************************************************-->
+<!doctype html>
+<head>
+	<meta charset="utf-8" />
+	<title>loginpage.html</title>
+</head>
+<html>
+	<body>
+		<p>
+		<script>
+var login=window.location.search;
+if(login.length==0)
+{
+	window.location.replace('login.html');
+}
+var argv=login.split(/[?=&]/);
+var users=new Object();
+users.AoEiuV020="aoeiuv";
+users.root="uroot";
+var user=argv[argv.indexOf("user")+1];
+var password=argv[argv.indexOf("password")+1];
+var flag=(password==users[user]);
+document.write("user : "+user+"<br/>");
+document.write("password : "+password+"<br/>");
+document.write("log in "+(flag?"success":"failed")+"<br/>");
+if (flag)
+{
+var doller=(user=="root")?"#":"$";
+document.write(doller);
+}
+		</script>
+		</p>
+	</body>
+</html>
