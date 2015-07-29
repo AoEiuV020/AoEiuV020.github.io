@@ -15,6 +15,11 @@
 		<p id="top">php的学习，</p>
 		<p>
 <?php
+echo "Hello,your IP: ".$_SERVER["REMOTE_ADDR"]." : ".$_SERVER["REMOTE_PORT"]."<br/>\n";
+echo $_SERVER["HTTP_USER_AGENT"]."<br/>\n";
+?>
+		</p>
+<?php
 function li2($href,$inner)
 {
 	echo "<li><a href=\"".$href."\">".$inner."...</a></li>";
@@ -34,6 +39,9 @@ li("print");
 li("class");
 li("define");
 li("string");
+li("array");
+li("serverinfo");
+li("request");
 echo "</ol>\n";
 ?>
 		
