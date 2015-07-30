@@ -11,19 +11,40 @@
 </head>
 <html>
 	<body>
-		<form>
+	<form method="post" action="<?php echo $_SERVER["SCRIPT_NAME"]?>">
 <span>user<br/>
-</span><input type="text" name="user" value="AoEiuV"/><br/>
+</span><input type="text" name="puser" value="AoEiuV"/><br/>
 <span>passwd<br/>
-</span><input type="password" name="passwd" value="aoeiuv"/><br/>
-<input type="submit" value="submit"/>
+</span><input type="password" name="ppasswd" value="aoeiuv"/><br/>
+<input type="submit" value="post"/>
+		</form>
+		<form method="get">
+<span>user<br/>
+</span><input type="text" name="guser" value="AoEiuV"/><br/>
+<span>passwd<br/>
+</span><input type="password" name="gpasswd" value="aoeiuv"/><br/>
+<input type="submit" value="get"/>
+		</form>
 		<p>
-		
+
 <?php
-echo $_SERVER["QUERY_STRING"]."<br/>\n";
-foreach ($_REQUEST as $key => $val)
+if(count($_REQUEST))
 {
-	echo $key."-->".$val."<br/>\n";
+	echo $_SERVER["QUERY_STRING"]."<br/>\n";
+	foreach ($_POST as $key => $val)
+	{
+		echo $key."-->".$val."<br/>\n";
+	}
+	echo "<br/>\n";
+	foreach ($_GET as $key => $val)
+	{
+		echo $key."-->".$val."<br/>\n";
+	}
+	echo "<br/>\n";
+	foreach ($_REQUEST as $key => $val)
+	{
+		echo $key."-->".$val."<br/>\n";
+	}
 }
 ?>
 		</p>

@@ -42,6 +42,8 @@ li("string");
 li("array");
 li("serverinfo");
 li("request");
+li("namespace");
+li("php");
 echo "</ol>\n";
 ?>
 		
