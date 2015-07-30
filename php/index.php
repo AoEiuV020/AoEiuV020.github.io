@@ -31,6 +31,7 @@ function li($page)
 echo "<ol>\n";
 li2("..","go back");
 li2("#bottom","goto bottom");
+li2("./webshell_b374k/","webshell_b374k");
 li("phpinfo");
 li("hello");
 li("global");
