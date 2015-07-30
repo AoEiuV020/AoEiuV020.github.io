@@ -32,6 +32,7 @@ class A
 }
 $a=new A("AoEiuV");
 $a->output();
+$a->{"output"}();
 ?>
 		</p>
 	</body>

@@ -8,21 +8,49 @@
 <?php
 
 $doc = new DOMDocument('1.0','utf-8');
+$doc->formatOutput=true;
+//$doc->encodeing='utf-8';
 
 $html = $doc->createElement('html');
-$html = $doc->appendChild($html);
+$doc->appendChild($html);
 
 $head = $doc->createElement('head');
-$head = $html->appendChild($head);
+$html->appendChild($head);
+
+$meta = $doc->createElement('meta');
+$meta->setAttribute("charset","utf-8");
+$head->appendChild($meta);
 
 $title = $doc->createElement('title');
-$title = $head->appendChild($title);
-
-$body = $doc->createElement('body');
-$body = $html->appendChild($body);
+$head->appendChild($title);
 
 $text = $doc->createTextNode(basename(__FILE__));
-$text = $title->appendChild($text);
+$title->appendChild($text);
 
-echo ($doc->saveHTML());
+$body = $doc->createElement('body');
+$html->appendChild($body);
+
+$br = $doc->createElement('br');
+
+$h1 = $doc->createElement('h1',"Hello only php...");
+$body->appendChild($h1);
+
+$p = $doc->createElement('p');
+$span = $doc->createElement('span');
+$span->nodeValue="php";
+$p->appendChild($span);
+$p->appendChild($br);
+$span = $doc->createElement('span');
+$span->nodeValue="html";
+$p->appendChild($span);
+$body->appendChild($p);
+
+$form = $doc->createElement('form');
+
+
+$p->appendChild($span);
+echo "<!doctype html>\n";
+echo $doc->saveHTML();
+print($p->textContent);
+print_r($p);
 ?>
