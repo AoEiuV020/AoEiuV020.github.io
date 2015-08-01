@@ -45,6 +45,7 @@ li("serverinfo");
 li("request");
 li("namespace");
 li("html");
+li("file");
 echo "</ol>\n";
 ?>
 		
