@@ -40,6 +40,8 @@ $span = $doc->createElement('span');
 $span->nodeValue="php";
 $p->appendChild($span);
 $p->appendChild($br);
+$text = $doc->createTextNode(basename("<!-- -->\n"));
+$p->appendChild($text);
 $span = $doc->createElement('span');
 $span->nodeValue="html";
 $p->appendChild($span);
