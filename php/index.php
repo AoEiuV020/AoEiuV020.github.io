@@ -47,6 +47,8 @@ li("request");
 li("namespace");
 li("html");
 li("file");
+li("dr_com");
+li("constants");
 echo "</ol>\n";
 ?>
 		

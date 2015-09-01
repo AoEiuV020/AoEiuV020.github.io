@@ -30,7 +30,6 @@ $title->appendChild($text);
 $body = $doc->createElement('body');
 $html->appendChild($body);
 
-$br = $doc->createElement('br');
 
 $h1 = $doc->createElement('h1',"Hello only php...");
 $body->appendChild($h1);
@@ -39,20 +38,16 @@ $p = $doc->createElement('p');
 $span = $doc->createElement('span');
 $span->nodeValue="php";
 $p->appendChild($span);
+$br = $doc->createElement('br');
 $p->appendChild($br);
-$text = $doc->createTextNode(basename("<!-- -->\n"));
+$text = $doc->createTextNode("<!-- -->\n");
 $p->appendChild($text);
 $span = $doc->createElement('span');
 $span->nodeValue="html";
 $p->appendChild($span);
 $body->appendChild($p);
 
-$form = $doc->createElement('form');
 
-
-$p->appendChild($span);
 echo "<!doctype html>\n";
 echo $doc->saveHTML();
-print($p->textContent);
-print_r($p);
 ?>
