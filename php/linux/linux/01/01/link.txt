@@ -1,0 +1,7 @@
+http://baike.baidu.com/view/8095.htm 度娘百科-UNIX
+http://baike.baidu.com/view/1634.htm 度娘百科-Linux
+http://baike.baidu.com/view/130692.htm?fromtitle=GPL%E5%8D%8F%E8%AE%AE 度娘百科-GPL开源协议
+http://baike.baidu.com/view/209573.htm 度娘百科-POSIX标准
+http://blog.csdn.net/dycwahaha/article/details/2300594 这说的很多，可以简单看看，
+http://blog.csdn.net/xiazdong/article/details/783521 这说的比较广，而且简洁，不只是历史，有时间可以完整看一遍，
+https://github.com/AoEiuV020/linux 林恩怜-UNIX高级c语言程序代码，就一点点东西
