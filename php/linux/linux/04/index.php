@@ -25,9 +25,20 @@ if(file_exists($info_txt))
 	$fpinfo = fopen($info_txt,"r");
 	while(!feof($fpinfo))
 	{
-		$span = $doc->createElement('span');
-		$span->nodeValue=fgets($fpinfo);
-		$p->appendChild($span);
+		$content=fgets($fpinfo);
+		switch(substr($content,0,4))
+		{
+		case "img:":
+			$img = $doc->createElement('img');
+			$content=str_replace(array("\n","\r"),"",$content);
+			$img->setAttribute("src",substr($content,4));
+			$p->appendChild($img);
+			break;
+		default:
+			$span = $doc->createElement('span');
+			$span->nodeValue=$content;
+			$p->appendChild($span);
+		}
 		$br = $doc->createElement('br');
 		$p->appendChild($br);
 	}
@@ -37,7 +48,7 @@ $body->appendChild($p);
 
 $p = $doc->createElement('p');
 $dir = opendir('.');
-$exclude = array(".",basename(__FILE__),"info.txt","link.txt","logreport");
+$exclude = array(".","img",basename(__FILE__),"info.txt","link.txt","about.txt","logreport");
 while(($file=readdir($dir))!==false)
 {
 	$flag=false;
@@ -96,6 +107,7 @@ if(file_exists($link_txt))
 		$a = $doc->createElement('a');
 		list($href,$info)=fscanf($fplink,"%s%s");
 		$a -> setAttribute('href',$href);
+		$a -> setAttribute('target',"_blank");
 		$a->nodeValue=$info;
 		$p->appendChild($a);
 		$br = $doc->createElement('br');
