@@ -13,6 +13,7 @@ class PersonalWebsite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: '编程开发知识分享',
       home: Scaffold(
         body: Center(
           child: Container(
