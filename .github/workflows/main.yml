@@ -13,12 +13,18 @@ on:
       - '.github/workflows/*'
       - '!.github/workflows/main.yml'
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
 jobs:
   build_env:
     name: build env
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: init custom env
         run: |
           set -a
@@ -27,13 +33,15 @@ jobs:
           then
               CREATE_RELEASE="true"
               BUILD_VERSION=${GITHUB_REF#refs/tags/}
-              RELEASE_BODY=$(./latest-changelog.sh $BUILD_VERSION |sed '1s/[，,]$//;1s/^\(.*\)$/### \1\n/')
+              if [[ -x ./latest-changelog.sh ]]
+              then
+                  RELEASE_BODY=$(./latest-changelog.sh $BUILD_VERSION |sed '1s/[，,]$//;1s/^\(.*\)$/### \1\n/')
+                  TG_CHANGELOG=$(./latest-changelog.sh $BUILD_VERSION |sed -n '{;=;p}' | sed "N;s/\n/. /g")
+              fi
               if [[ -z "$RELEASE_BODY" ]]
               then
                   RELEASE_BODY='### ${{ github.event.head_commit.message }}'
                   TG_CHANGELOG="$(echo "$RELEASE_BODY"|sed -n "s/### \(.*\)/\1/p" |sed -n '{;=;p}' | sed "N;s/\n/. /g")"
-              else
-                  TG_CHANGELOG=$(./latest-changelog.sh $BUILD_VERSION |sed -n '{;=;p}' | sed "N;s/\n/. /g")
               fi
           elif [[ ${GITHUB_REF} == refs/pull* ]]
           then
@@ -41,10 +49,14 @@ jobs:
               num=${GITHUB_REF#refs/pull/}
               num=${num%/merge}
               BUILD_VERSION=pr-${num}-"$(date +'%Y%m%d%H%M%S')"
-          elif [[ ${GITHUB_REF} == refs/heads* ]]
+          elif [[ ${GITHUB_EVENT_NAME} == workflow_dispatch ]]
           then
               CREATE_RELEASE="false"
               BUILD_VERSION="$(date +'%Y%m%d%H%M%S')"
+          elif [[ ${GITHUB_REF} == refs/heads* ]]
+          then
+              CREATE_RELEASE="false"
+              BUILD_VERSION="${GITHUB_REF#refs/heads/}-$(date +'%Y%m%d%H%M%S')"
               RELEASE_BODY=$(echo '${{ toJson(github.event.commits) }}' |jq -r 'map("### "+.message)|join("\n\n------\n")')
               TG_CHANGELOG="$(echo "$RELEASE_BODY"|sed -n "s/### \(.*\)/\1/p" |sed -n '{;=;p}' | sed "N;s/\n/. /g")"
               VERSION_PREFIX='内测版-'
@@ -75,22 +87,18 @@ jobs:
           then
               echo SEND_TELEGRAM="true" >> .custom_env
           fi
-          if test -n "${{ secrets.KEY_PROPERTIES }}"
-          then
-            echo "${{ secrets.KEY_PROPERTIES }}" > signing.properties
-            if test -n "${{ secrets.SIGNING_KEY }}"
-            then
-                echo ANDROID_SIGN="true" >> .custom_env
-            fi
-            cat signing.properties >> .custom_env
-          fi
           cat .custom_env
           cat .custom_env >> $GITHUB_ENV
       - name: upload .custom_env
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: custom_env
           path: ./.custom_env
+      - name: Setup tmate session
+        env:   
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       - name: clean custom env
         run: rm .custom_env
   build_app:
@@ -111,7 +119,7 @@ jobs:
       fail-fast: false
     steps:
       - name: download custom env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: custom_env
       - name: apply custom env
@@ -133,7 +141,19 @@ jobs:
       - name: enable config (${{ matrix.config }})
         if: "${{ matrix.ENABLE_CONFIG != '' }}"
         run: flutter config --enable-${{ matrix.ENABLE_CONFIG }}
-      - run: |
+      - name: prepare android signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        if: "${{ ( matrix.FILE_TYPE == 'apk' || matrix.FILE_TYPE == 'aab' ) && env.SIGNING_KEY != '' }}"
+        run: |
+          cd android
+          echo "${{ secrets.SIGNING_KEY }}" |base64 -d > ci.jks
+          echo storeFile=ci.jks > key.properties
+          echo storePassword=${{ secrets.KEY_STORE_PASSWORD }} >> key.properties
+          echo keyAlias=${{ secrets.ALIAS }} >> key.properties
+          echo keyPassword=${{ secrets.KEY_PASSWORD }} >> key.properties
+      - name: build
+        run: |
           flutter pub get
           flutter build ${{ matrix.config }} ${{ matrix.BUILD_ARGS }}
       - name: post
@@ -159,6 +179,11 @@ jobs:
           path: ${{ matrix.RELEASE_PATH }}
           directory: ${{ matrix.RELEASE_DIRECTORY }}
           filename: ${{ github.workspace }}/build/${{ env.BUILD_NAME_WITH_VERSION }}-${{ matrix.name }}.${{ matrix.FILE_TYPE }}
+      - name: set python version
+        if: "${{ matrix.FILE_TYPE == 'dmg' }}"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' 
       - name: dmg
         if: "${{ matrix.FILE_TYPE == 'dmg' }}"
         run: |
@@ -169,20 +194,11 @@ jobs:
           sed "s/###PATH###/$(echo $appPath | sed 's_/_\\/_g')/g" |
           tee ./appdmg.json
           appdmg ./appdmg.json build/${{ env.BUILD_NAME_WITH_VERSION }}-${{ matrix.name }}.${{ matrix.FILE_TYPE }}
-      - uses: AoEiuV020/sign-android-release@v2
-        name: Sign release APK
-        if: ${{ matrix.FILE_TYPE == 'apk' && env.ANDROID_SIGN == 'true' }}
-        with:
-          releaseDirectory: ${{ matrix.RELEASE_DIRECTORY }}
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ env.keyAlias }}
-          keyStorePassword: ${{ env.storePassword }}
-          keyPassword: ${{ env.keyPassword }}
       - name: copy file
-        if: "${{ matrix.FILE_TYPE == 'apk' }}"
+        if: "${{ matrix.FILE_TYPE == 'apk' || matrix.FILE_TYPE == 'aab' }}"
         run: cp ${{ matrix.RELEASE_DIRECTORY }}/${{ matrix.RELEASE_PATH }} build/${{ env.BUILD_NAME_WITH_VERSION }}-${{ matrix.name }}.${{ matrix.FILE_TYPE }}
       - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}-build
           path: build/${{ env.BUILD_NAME_WITH_VERSION }}-${{ matrix.name }}.${{ matrix.FILE_TYPE }}
@@ -199,7 +215,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: download custom env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: custom_env
       - name: apply custom env
@@ -225,7 +241,7 @@ jobs:
           echo RELEASE_UPLAOD_ID="${{ steps.create_release.outputs.id }}" >> .release_env
       - name: upload .release_env
         if: ${{ env.CREATE_RELEASE == 'true' }}
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: release_env
           path: ./.release_env
@@ -235,25 +251,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        name: [ android, web, linux, windows, ios, macos ]
+        name: [ web ]
         include:
-          - name: android
-            FILE_TYPE: apk
           - name: web
             FILE_TYPE: zip
-          - name: linux
-            FILE_TYPE: tar.gz
-          - name: windows
-            FILE_TYPE: zip
-          - name: ios
-            FILE_TYPE: ipa
-          - name: macos
-            FILE_TYPE: dmg
       # Disable fail-fast; we want results from all OSes even if one fails.
       fail-fast: false
     steps:
       - name: download custom env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: custom_env
       - name: apply custom env
@@ -262,7 +268,7 @@ jobs:
           rm .custom_env
       - name: download release env
         if: ${{ env.CREATE_RELEASE == 'true' }}
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: release_env
       - name: apply release env
@@ -272,7 +278,7 @@ jobs:
           rm .release_env
       - name: download (${{ matrix.name }})
         if: ${{ env.CREATE_RELEASE == 'true' }}
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.name }}-build
       - name: Upload Release Asset (${{ matrix.name }})
@@ -291,7 +297,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: download custom env
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: custom_env
       - name: apply custom env
@@ -300,7 +306,7 @@ jobs:
           rm .custom_env
       - name: download release env
         if: ${{ env.CREATE_RELEASE == 'true' }}
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: release_env
       - name: apply release env
